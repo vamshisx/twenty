@@ -1,6 +1,5 @@
 import { CommandGroup } from '@/command-menu/components/CommandGroup';
 import { CommandMenuList } from '@/command-menu/components/CommandMenuList';
-import { COMMAND_MENU_LIST_SELECTABLE_LIST_ID } from '@/command-menu/constants/CommandMenuListSelectableListId';
 import { useUpdateCommandMenuPageInfo } from '@/command-menu/hooks/useUpdateCommandMenuPageInfo';
 import { ChartSettingItem } from '@/command-menu/pages/page-layout/components/chart-settings/ChartSettingItem';
 import { ChartLimitInfoBanner } from '@/command-menu/pages/page-layout/components/ChartLimitInfoBanner';
@@ -8,26 +7,23 @@ import { ChartTypeSelectionSection } from '@/command-menu/pages/page-layout/comp
 import { CHART_SETTINGS_HEADINGS } from '@/command-menu/pages/page-layout/constants/ChartSettingsHeadings';
 import { GRAPH_TYPE_INFORMATION } from '@/command-menu/pages/page-layout/constants/GraphTypeInformation';
 import { useChartSettingsValues } from '@/command-menu/pages/page-layout/hooks/useChartSettingsValues';
-import { useNavigatePageLayoutCommandMenu } from '@/command-menu/pages/page-layout/hooks/useNavigatePageLayoutCommandMenu';
 import { usePageLayoutIdFromContextStoreTargetedRecord } from '@/command-menu/pages/page-layout/hooks/usePageLayoutFromContextStoreTargetedRecord';
-import { useUpdateChartSettingInput } from '@/command-menu/pages/page-layout/hooks/useUpdateChartSettingInput';
-import { useUpdateChartSettingToggle } from '@/command-menu/pages/page-layout/hooks/useUpdateChartSettingToggle';
 import { useUpdateCurrentWidgetConfig } from '@/command-menu/pages/page-layout/hooks/useUpdateCurrentWidgetConfig';
 import { useGetConfigToUpdateAfterGraphTypeChange } from '@/command-menu/pages/page-layout/hooks/useUpdateGraphTypeConfig';
-import { type ChartConfiguration } from '@/command-menu/pages/page-layout/types/ChartConfiguration';
 import { CHART_CONFIGURATION_SETTING_IDS } from '@/command-menu/pages/page-layout/types/ChartConfigurationSettingIds';
 import { shouldHideChartSetting } from '@/command-menu/pages/page-layout/utils/shouldHideChartSetting';
-import { CommandMenuPages } from '@/command-menu/types/CommandMenuPages';
 import { useObjectMetadataItems } from '@/object-metadata/hooks/useObjectMetadataItems';
 import { hasWidgetTooManyGroupsComponentState } from '@/page-layout/widgets/graph/states/hasWidgetTooManyGroupsComponentState';
-import { useOpenDropdown } from '@/ui/layout/dropdown/hooks/useOpenDropdown';
-import { useSelectableList } from '@/ui/layout/selectable-list/hooks/useSelectableList';
 import { useRecoilComponentState } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentState';
 import styled from '@emotion/styled';
 import { t } from '@lingui/core/macro';
 import { isFieldMetadataDateKind } from 'twenty-shared/utils';
 
-import { GraphType, type PageLayoutWidget } from '~/generated/graphql';
+import { GraphType } from '@/command-menu/pages/page-layout/types/GraphType';
+import { assertChartWidgetOrThrow } from '@/command-menu/pages/page-layout/utils/assertChartWidgetOrThrow';
+import { getCurrentGraphTypeFromConfig } from '@/command-menu/pages/page-layout/utils/getCurrentGraphTypeFromConfig';
+import { isWidgetConfigurationOfType } from '@/command-menu/pages/page-layout/utils/isWidgetConfigurationOfType';
+import { type PageLayoutWidget } from '@/page-layout/types/PageLayoutWidget';
 
 const StyledCommandMenuContainer = styled.div`
   display: flex;
@@ -38,35 +34,19 @@ const StyledCommandMenuContainer = styled.div`
 
 export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
   const { updateCommandMenuPageInfo } = useUpdateCommandMenuPageInfo();
-  const { navigatePageLayoutCommandMenu } = useNavigatePageLayoutCommandMenu();
   const { pageLayoutId } = usePageLayoutIdFromContextStoreTargetedRecord();
   const { updateCurrentWidgetConfig } =
     useUpdateCurrentWidgetConfig(pageLayoutId);
-  const { openDropdown } = useOpenDropdown();
-  const { setSelectedItemId } = useSelectableList(
-    COMMAND_MENU_LIST_SELECTABLE_LIST_ID,
-  );
   const { objectMetadataItems } = useObjectMetadataItems();
 
-  if (widget.configuration?.__typename === 'IframeConfiguration') {
-    throw new Error(t`IframeConfiguration is not supported`);
-  }
+  assertChartWidgetOrThrow(widget);
 
-  const configuration = widget.configuration as ChartConfiguration;
-  const currentGraphType = configuration?.graphType;
+  const configuration = widget.configuration;
 
   const { getChartSettingsValues } = useChartSettingsValues({
     objectMetadataId: widget.objectMetadataId,
     configuration,
   });
-
-  const { updateChartSettingToggle } = useUpdateChartSettingToggle({
-    pageLayoutId,
-    objectMetadataId: widget.objectMetadataId,
-    configuration,
-  });
-
-  const { updateChartSettingInput } = useUpdateChartSettingInput(pageLayoutId);
 
   const { getConfigToUpdateAfterGraphTypeChange } =
     useGetConfigToUpdateAfterGraphTypeChange({
@@ -100,6 +80,8 @@ export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
     }
   };
 
+  const currentGraphType = getCurrentGraphTypeFromConfig(configuration);
+
   const chartSettings = GRAPH_TYPE_INFORMATION[currentGraphType].settings;
 
   const objectMetadataItem = objectMetadataItems.find(
@@ -116,18 +98,26 @@ export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
             isGroupByEnabled as boolean,
             configuration,
             objectMetadataItem,
+            objectMetadataItems,
           ),
       )
       .map((item) => item.id),
   );
 
-  const primaryAxisFieldMetadataId =
-    configuration.__typename === 'BarChartConfiguration' ||
-    configuration.__typename === 'LineChartConfiguration'
-      ? configuration.primaryAxisGroupByFieldMetadataId
-      : configuration.__typename === 'PieChartConfiguration'
-        ? configuration.groupByFieldMetadataId
-        : null;
+  const isBarOrLineChart =
+    isWidgetConfigurationOfType(configuration, 'BarChartConfiguration') ||
+    isWidgetConfigurationOfType(configuration, 'LineChartConfiguration');
+
+  const isPieChart = isWidgetConfigurationOfType(
+    configuration,
+    'PieChartConfiguration',
+  );
+
+  const primaryAxisFieldMetadataId = isBarOrLineChart
+    ? configuration.primaryAxisGroupByFieldMetadataId
+    : isPieChart
+      ? configuration.groupByFieldMetadataId
+      : null;
 
   const primaryAxisField = objectMetadataItem?.fields?.find(
     (field) => field.id === primaryAxisFieldMetadataId,
@@ -135,13 +125,11 @@ export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
 
   const isPrimaryAxisDate = isFieldMetadataDateKind(primaryAxisField?.type);
 
-  const primaryAxisDateGranularity =
-    configuration.__typename === 'BarChartConfiguration' ||
-    configuration.__typename === 'LineChartConfiguration'
-      ? configuration.primaryAxisDateGranularity
-      : configuration.__typename === 'PieChartConfiguration'
-        ? configuration.dateGranularity
-        : null;
+  const primaryAxisDateGranularity = isBarOrLineChart
+    ? configuration.primaryAxisDateGranularity
+    : isPieChart
+      ? configuration.dateGranularity
+      : null;
 
   const bannerTargetHeading =
     currentGraphType === GraphType.PIE
@@ -164,6 +152,7 @@ export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
                 isGroupByEnabled as boolean,
                 configuration,
                 objectMetadataItem,
+                objectMetadataItems,
               ),
           );
 
@@ -173,46 +162,19 @@ export const ChartSettings = ({ widget }: { widget: PageLayoutWidget }) => {
             <CommandGroup key={group.heading.id} heading={t(group.heading)}>
               {shouldShowBanner && hasWidgetTooManyGroups && (
                 <ChartLimitInfoBanner
-                  graphType={currentGraphType}
+                  widgetConfigurationType={configuration.configurationType}
                   isPrimaryAxisDate={isPrimaryAxisDate}
                   primaryAxisDateGranularity={primaryAxisDateGranularity}
                 />
               )}
-              {visibleItems.map((item) => {
-                const handleItemToggleChange = () => {
-                  setSelectedItemId(item.id);
-                  updateChartSettingToggle(item.id);
-                };
-
-                const handleItemInputChange = (value: number | null) => {
-                  updateChartSettingInput(item.id, value);
-                };
-
-                const handleItemDropdownOpen = () => {
-                  openDropdown({
-                    dropdownComponentInstanceIdFromProps: item.id,
-                  });
-                };
-
-                const handleFilterClick = () => {
-                  navigatePageLayoutCommandMenu({
-                    commandMenuPage: CommandMenuPages.PageLayoutGraphFilter,
-                  });
-                };
-
-                return (
-                  <ChartSettingItem
-                    key={item.id}
-                    item={item}
-                    configuration={configuration}
-                    getChartSettingsValues={getChartSettingsValues}
-                    onToggleChange={handleItemToggleChange}
-                    onInputChange={handleItemInputChange}
-                    onDropdownOpen={handleItemDropdownOpen}
-                    onFilterClick={handleFilterClick}
-                  />
-                );
-              })}
+              {visibleItems.map((item) => (
+                <ChartSettingItem
+                  key={item.id}
+                  item={item}
+                  objectMetadataId={widget.objectMetadataId}
+                  configuration={configuration}
+                />
+              ))}
             </CommandGroup>
           );
         })}

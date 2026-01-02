@@ -1,6 +1,7 @@
 import { type ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
-import { GRAPH_DEFAULT_DATE_GRANULARITY } from '@/page-layout/widgets/graph/constants/GraphDefaultDateGranularity.constant';
+import { GRAPH_DEFAULT_DATE_GRANULARITY } from '@/page-layout/widgets/graph/constants/GraphDefaultDateGranularity';
 import { getGroupByOrderBy } from '@/page-layout/widgets/graph/utils/getGroupByOrderBy';
+import { isRelationNestedFieldDateKind } from '@/page-layout/widgets/graph/utils/isRelationNestedFieldDateKind';
 import {
   type AggregateOrderByWithGroupByField,
   type ObjectRecordOrderByForCompositeField,
@@ -17,16 +18,20 @@ import {
 
 export const generateGroupByQueryVariablesFromPieChartConfiguration = ({
   objectMetadataItem,
+  objectMetadataItems,
   chartConfiguration,
   aggregateOperation,
   limit,
   firstDayOfTheWeek,
+  userTimeZone,
 }: {
   objectMetadataItem: ObjectMetadataItem;
+  objectMetadataItems: ObjectMetadataItem[];
   chartConfiguration: PieChartConfiguration;
   aggregateOperation?: string;
   limit?: number;
   firstDayOfTheWeek?: number;
+  userTimeZone?: string;
 }) => {
   const groupByFieldId = chartConfiguration.groupByFieldMetadataId;
   const groupBySubFieldName =
@@ -45,15 +50,24 @@ export const generateGroupByQueryVariablesFromPieChartConfiguration = ({
 
   const isFieldDate = isFieldMetadataDateKind(groupByField.type);
 
+  const isNestedDate = isRelationNestedFieldDateKind({
+    relationField: groupByField,
+    relationNestedFieldName: groupBySubFieldName,
+    objectMetadataItems,
+  });
+
+  const shouldApplyDateGranularity = isFieldDate || isNestedDate;
+
   const groupBy: Array<GroupByFieldObject> = [
     buildGroupByFieldObject({
       field: groupByField,
       subFieldName: groupBySubFieldName,
-
-      dateGranularity: isFieldDate
+      dateGranularity: shouldApplyDateGranularity
         ? (dateGranularity ?? GRAPH_DEFAULT_DATE_GRANULARITY)
         : undefined,
       firstDayOfTheWeek,
+      isNestedDateField: isNestedDate,
+      timeZone: userTimeZone,
     }),
   ];
 
@@ -72,7 +86,7 @@ export const generateGroupByQueryVariablesFromPieChartConfiguration = ({
         groupByField,
         groupBySubFieldName,
         aggregateOperation,
-        dateGranularity: isFieldDate
+        dateGranularity: shouldApplyDateGranularity
           ? (dateGranularity ?? GRAPH_DEFAULT_DATE_GRANULARITY)
           : undefined,
       }),

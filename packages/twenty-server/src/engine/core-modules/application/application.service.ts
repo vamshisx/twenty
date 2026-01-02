@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { isDefined } from 'twenty-shared/utils';
-import { type QueryRunner, Repository } from 'typeorm';
+import { type QueryRunner, type Repository } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { ApplicationEntity } from 'src/engine/core-modules/application/application.entity';
@@ -10,18 +10,17 @@ import {
   ApplicationException,
   ApplicationExceptionCode,
 } from 'src/engine/core-modules/application/application.exception';
-import { TWENTY_STANDARD_APPLICATION } from 'src/engine/core-modules/application/constants/twenty-standard-applications';
-import { WorkspaceFlatApplicationMapCacheService } from 'src/engine/core-modules/application/services/workspace-flat-application-map-cache.service';
 import { WorkspaceEntity } from 'src/engine/core-modules/workspace/workspace.entity';
-import { WorkspaceManyOrAllFlatEntityMapsCacheService } from 'src/engine/metadata-modules/flat-entity/services/workspace-many-or-all-flat-entity-maps-cache.service';
+import { ALL_FLAT_ENTITY_MAPS_PROPERTIES } from 'src/engine/metadata-modules/flat-entity/constant/all-flat-entity-maps-properties.constant';
+import { WorkspaceCacheService } from 'src/engine/workspace-cache/services/workspace-cache.service';
+import { TWENTY_STANDARD_APPLICATION } from 'src/engine/workspace-manager/twenty-standard-application/constants/twenty-standard-applications';
 
 @Injectable()
 export class ApplicationService {
   constructor(
     @InjectRepository(ApplicationEntity)
     private readonly applicationRepository: Repository<ApplicationEntity>,
-    private readonly workspaceManyOrAllFlatEntityMapsCacheService: WorkspaceManyOrAllFlatEntityMapsCacheService,
-    private readonly workspaceFlatApplicationMapCacheService: WorkspaceFlatApplicationMapCacheService,
+    private readonly workspaceCacheService: WorkspaceCacheService,
     @InjectRepository(WorkspaceEntity)
     private readonly workspaceRepository: Repository<WorkspaceEntity>,
   ) {}
@@ -50,12 +49,11 @@ export class ApplicationService {
       );
     }
 
-    const flatApplicationMaps =
-      await this.workspaceFlatApplicationMapCacheService.getExistingOrRecomputeFlatMaps(
-        {
-          workspaceId: workspace.id,
-        },
-      );
+    const { flatApplicationMaps } =
+      await this.workspaceCacheService.getOrRecompute(workspace.id, [
+        'flatApplicationMaps',
+      ]);
+
     const twentyStandardApplicationId =
       flatApplicationMaps.idByUniversalIdentifier[
         TWENTY_STANDARD_APPLICATION.universalIdentifier
@@ -148,6 +146,32 @@ export class ApplicationService {
     });
   }
 
+  async findTwentyStandardApplicationOrThrow(workspaceId: string): Promise<{
+    application: ApplicationEntity;
+    workspace: WorkspaceEntity;
+  }> {
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!isDefined(workspace)) {
+      throw new ApplicationException(
+        `Could not find workspace ${workspaceId}`,
+        ApplicationExceptionCode.APPLICATION_NOT_FOUND,
+      );
+    }
+
+    const { twentyStandardFlatApplication } =
+      await this.findWorkspaceTwentyStandardAndCustomApplicationOrThrow({
+        workspace,
+      });
+
+    return {
+      application: twentyStandardFlatApplication as ApplicationEntity,
+      workspace,
+    };
+  }
+
   async createTwentyStandardApplication(
     {
       workspaceId,
@@ -169,9 +193,9 @@ export class ApplicationService {
     );
 
     if (!skipCacheInvalidation) {
-      await this.workspaceFlatApplicationMapCacheService.invalidateCache({
-        workspaceId,
-      });
+      await this.workspaceCacheService.invalidateAndRecompute(workspaceId, [
+        'flatApplicationMaps',
+      ]);
     }
 
     return twentyStandardApplication;
@@ -221,9 +245,9 @@ export class ApplicationService {
 
     const savedApplication = await this.applicationRepository.save(application);
 
-    await this.workspaceFlatApplicationMapCacheService.invalidateCache({
-      workspaceId: data.workspaceId,
-    });
+    await this.workspaceCacheService.invalidateAndRecompute(data.workspaceId, [
+      'flatApplicationMaps',
+    ]);
 
     return savedApplication;
   }
@@ -234,9 +258,10 @@ export class ApplicationService {
   ): Promise<ApplicationEntity> {
     await this.applicationRepository.update({ id }, data);
 
-    await this.workspaceFlatApplicationMapCacheService.invalidateCache({
-      workspaceId: data.workspaceId as string,
-    });
+    await this.workspaceCacheService.invalidateAndRecompute(
+      data.workspaceId as string,
+      ['flatApplicationMaps'],
+    );
 
     const updatedApplication = await this.findById(id);
 
@@ -262,14 +287,13 @@ export class ApplicationService {
       workspaceId,
     });
 
-    await this.workspaceFlatApplicationMapCacheService.invalidateCache({
-      workspaceId,
-    });
+    await this.workspaceCacheService.invalidateAndRecompute(workspaceId, [
+      'flatApplicationMaps',
+    ]);
 
-    await this.workspaceManyOrAllFlatEntityMapsCacheService.invalidateFlatEntityMaps(
-      {
-        workspaceId,
-      },
+    await this.workspaceCacheService.invalidateAndRecompute(
+      workspaceId,
+      ALL_FLAT_ENTITY_MAPS_PROPERTIES,
     );
   }
 }

@@ -22,10 +22,11 @@ export const getDefaultFlatFieldMetadata = ({
     ['defaultValue', 'settings'],
   );
 
-  const createdAt = new Date();
+  const createdAt = new Date().toISOString();
 
   return {
     calendarViewIds: [],
+    mainGroupByFieldMetadataViewIds: [],
     viewFieldIds: [],
     description: createFieldInput.description ?? null,
     id: fieldMetadataId,
@@ -37,8 +38,8 @@ export const getDefaultFlatFieldMetadata = ({
       createFieldInput.isNullable,
       createFieldInput.isRemoteCreation,
     ),
-    isSystem: false,
-    isUnique: createFieldInput.isUnique ?? null,
+    isSystem: createFieldInput.isSystem ?? false,
+    isUnique: createFieldInput.isUnique ?? false,
     label: createFieldInput.label,
     name: createFieldInput.name,
     objectMetadataId: createFieldInput.objectMetadataId,
@@ -57,9 +58,9 @@ export const getDefaultFlatFieldMetadata = ({
     updatedAt: createdAt,
     isUIReadOnly: createFieldInput.isUIReadOnly ?? false,
     morphId: null,
-    applicationId: workspaceCustomApplicationId,
+    applicationId:
+      createFieldInput.applicationId ?? workspaceCustomApplicationId,
     viewFilterIds: [],
-    viewGroupIds: [],
     kanbanAggregateOperationViewIds: [],
   } as const satisfies FlatFieldMetadata;
 };

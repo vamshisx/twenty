@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { useFilteredObjectMetadataItems } from '@/object-metadata/hooks/useFilteredObjectMetadataItems';
@@ -14,16 +14,13 @@ import styled from '@emotion/styled';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { AppPath, SettingsPath } from 'twenty-shared/types';
 
-import { currentWorkspaceState } from '@/auth/states/currentWorkspaceState';
-import { isObjectMetadataSettingsReadOnly } from '@/object-record/read-only/utils/isObjectMetadataSettingsReadOnly';
-import { SettingsItemTypeTag } from '@/settings/components/SettingsItemTypeTag';
+import { isObjectMetadataReadOnly } from '@/object-record/read-only/utils/isObjectMetadataReadOnly';
 import { activeTabIdComponentState } from '@/ui/layout/tab-list/states/activeTabIdComponentState';
 import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentValue';
 import { useTheme } from '@emotion/react';
 import { useLingui } from '@lingui/react/macro';
 import { getSettingsPath, isDefined } from 'twenty-shared/utils';
 import {
-  H3Title,
   IconCodeCircle,
   IconListDetails,
   IconPlus,
@@ -43,21 +40,13 @@ const StyledContentContainer = styled.div`
   padding-left: 0;
 `;
 
-const StyledObjectTypeTag = styled(SettingsItemTypeTag)`
-  box-sizing: border-box;
-  height: ${({ theme }) => theme.spacing(5)};
-  margin-left: ${({ theme }) => theme.spacing(2)};
-`;
-
-const StyledTitleContainer = styled.div`
-  display: flex;
-`;
-
 export const SettingsObjectDetailPage = () => {
   const navigateApp = useNavigateApp();
   const { t } = useLingui();
+  const theme = useTheme();
 
   const { objectNamePlural = '' } = useParams();
+
   const { findObjectMetadataItemByNamePlural } =
     useFilteredObjectMetadataItems();
 
@@ -68,11 +57,8 @@ export const SettingsObjectDetailPage = () => {
     findObjectMetadataItemByNamePlural(objectNamePlural) ??
     findObjectMetadataItemByNamePlural(updatedObjectNamePlural);
 
-  const currentWorkspace = useRecoilValue(currentWorkspaceState);
-  const readonly = isObjectMetadataSettingsReadOnly({
+  const readonly = isObjectMetadataReadOnly({
     objectMetadataItem,
-    workspaceCustomApplicationId:
-      currentWorkspace?.workspaceCustomApplication?.id,
   });
 
   const activeTabId = useRecoilComponentValue(
@@ -85,21 +71,25 @@ export const SettingsObjectDetailPage = () => {
     FeatureFlagKey.IS_UNIQUE_INDEXES_ENABLED,
   );
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   useEffect(() => {
     if (objectNamePlural === updatedObjectNamePlural)
       setUpdatedObjectNamePlural('');
-    if (!isDefined(objectMetadataItem)) navigateApp(AppPath.NotFound);
+    if (!isDeleting && !isDefined(objectMetadataItem))
+      navigateApp(AppPath.NotFound);
   }, [
     objectMetadataItem,
     navigateApp,
     objectNamePlural,
     updatedObjectNamePlural,
     setUpdatedObjectNamePlural,
+    isDeleting,
   ]);
 
-  const theme = useTheme();
-
-  if (!isDefined(objectMetadataItem)) return <></>;
+  if (!isDefined(objectMetadataItem)) {
+    return null;
+  }
 
   const tabs = [
     {
@@ -134,7 +124,13 @@ export const SettingsObjectDetailPage = () => {
       case SETTINGS_OBJECT_DETAIL_TABS.TABS_IDS.FIELDS:
         return <ObjectFields objectMetadataItem={objectMetadataItem} />;
       case SETTINGS_OBJECT_DETAIL_TABS.TABS_IDS.SETTINGS:
-        return <ObjectSettings objectMetadataItem={objectMetadataItem} />;
+        return (
+          <ObjectSettings
+            objectMetadataItem={objectMetadataItem}
+            isDeleting={isDeleting}
+            setIsDeleting={setIsDeleting}
+          />
+        );
       case SETTINGS_OBJECT_DETAIL_TABS.TABS_IDS.INDEXES:
         return <ObjectIndexes objectMetadataItem={objectMetadataItem} />;
       default:
@@ -145,18 +141,16 @@ export const SettingsObjectDetailPage = () => {
   return (
     <>
       <SubMenuTopBarContainer
-        title={
-          <StyledTitleContainer>
-            <H3Title title={objectMetadataItem.labelPlural} />
-            <StyledObjectTypeTag item={objectMetadataItem} />
-          </StyledTitleContainer>
-        }
+        title={objectMetadataItem.labelPlural}
         links={[
           {
             children: t`Workspace`,
             href: getSettingsPath(SettingsPath.Workspace),
           },
-          { children: t`Objects`, href: getSettingsPath(SettingsPath.Objects) },
+          {
+            children: t`Objects`,
+            href: getSettingsPath(SettingsPath.Objects),
+          },
           {
             children: objectMetadataItem.labelPlural,
           },

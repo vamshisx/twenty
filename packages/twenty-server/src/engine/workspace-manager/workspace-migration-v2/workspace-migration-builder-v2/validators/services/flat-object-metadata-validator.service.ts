@@ -19,6 +19,7 @@ export class FlatObjectMetadataValidatorService {
   public validateFlatObjectMetadataUpdate({
     flatEntityId,
     flatEntityUpdates,
+    buildOptions,
     optimisticFlatEntityMapsAndRelatedFlatEntityMaps: {
       flatObjectMetadataMaps: optimisticFlatObjectMetadataMaps,
       flatFieldMetadataMaps,
@@ -64,6 +65,7 @@ export class FlatObjectMetadataValidatorService {
       ...validateFlatObjectMetadataNameAndLabels({
         optimisticFlatObjectMetadataMaps,
         flatObjectMetadataToValidate: updatedFlatObjectMetadata,
+        buildOptions,
       }),
     );
 
@@ -85,6 +87,7 @@ export class FlatObjectMetadataValidatorService {
         ...validateFlatObjectMetadataIdentifiers({
           flatObjectMetadata: updatedFlatObjectMetadata,
           flatFieldMetadataMaps,
+          buildOptions,
         }),
       );
     }
@@ -143,14 +146,6 @@ export class FlatObjectMetadataValidatorService {
           userFriendlyMessage: msg`Standard objects cannot be deleted`,
         });
       }
-
-      if (!buildOptions.isSystemBuild && flatObjectMetadataToDelete.isActive) {
-        validationResult.errors.push({
-          code: ObjectMetadataExceptionCode.INVALID_OBJECT_INPUT,
-          message: t`Active objects cannot be deleted`,
-          userFriendlyMessage: msg`Active objects cannot be deleted`,
-        });
-      }
     }
 
     return validationResult;
@@ -162,6 +157,7 @@ export class FlatObjectMetadataValidatorService {
       flatObjectMetadataMaps: optimisticFlatObjectMetadataMaps,
       flatFieldMetadataMaps,
     },
+    buildOptions,
   }: FlatEntityValidationArgs<
     typeof ALL_METADATA_NAME.objectMetadata
   >): FailedFlatEntityValidation<FlatObjectMetadata> {
@@ -200,12 +196,14 @@ export class FlatObjectMetadataValidatorService {
       ...validateFlatObjectMetadataIdentifiers({
         flatObjectMetadata: flatObjectMetadataToValidate,
         flatFieldMetadataMaps,
+        buildOptions,
       }),
     );
     objectValidationResult.errors.push(
       ...validateFlatObjectMetadataNameAndLabels({
         optimisticFlatObjectMetadataMaps,
         flatObjectMetadataToValidate,
+        buildOptions,
       }),
     );
 

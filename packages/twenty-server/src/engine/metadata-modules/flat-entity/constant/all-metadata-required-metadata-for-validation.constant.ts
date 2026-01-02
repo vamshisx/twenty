@@ -44,9 +44,38 @@ export const ALL_METADATA_REQUIRED_METADATA_FOR_VALIDATION = {
   viewFilter: {
     view: true,
     fieldMetadata: true,
+    viewFilterGroup: true,
   },
   viewGroup: {
     fieldMetadata: true,
     view: true,
+  },
+  viewFilterGroup: {
+    view: true,
+    viewFilterGroup: true,
+  },
+  role: {},
+  roleTarget: {
+    role: true,
+    agent: true,
+  },
+  agent: {
+    role: true,
+  },
+  pageLayout: {},
+  pageLayoutTab: {
+    pageLayout: true,
+  },
+  pageLayoutWidget: {
+    pageLayoutTab: true,
+  },
+  rowLevelPermissionPredicate: {
+    fieldMetadata: true,
+    objectMetadata: true,
+    role: true,
+    rowLevelPermissionPredicateGroup: true,
+  },
+  rowLevelPermissionPredicateGroup: {
+    role: true,
   },
 } as const satisfies MetadataRequiredForValidation;
