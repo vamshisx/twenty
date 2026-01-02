@@ -203,8 +203,7 @@
     "typescript": "5.9.2",
     "graphql-redis-subscriptions/ioredis": "^5.6.0",
     "prosemirror-view": "1.40.0",
-    "prosemirror-transform": "1.10.4",
-    "next": "16.1.1"
+    "prosemirror-transform": "1.10.4"
   },
   "version": "0.2.1",
   "nx": {},
