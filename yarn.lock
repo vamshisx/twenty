@@ -7666,7 +7666,7 @@ __metadata:
     "@nestjs/graphql": ^12.0.0
     graphql: ^15.0.0 || ^16.0.0
     graphql-yoga: ^4.0.4
-  checksum: 10c0/929da1f7265003cb5f43291d6db96e752bd2ac5d81e21fb3af9b245e54e732f5862789d7e5941e893d85255919b4c6a5a37adb16ef6594fab606e8eec742891c
+  checksum: 10c0/401afe5176c908f12151f098f54367061b3c598de32a48196555df9a0bbf945d19fb85284b65413809272baf86e32cc576a20cdc6902b545946c12375e2deb00
   languageName: node
   linkType: hard
 
@@ -11823,7 +11823,7 @@ __metadata:
       optional: true
     ts-morph:
       optional: true
-  checksum: 10c0/eabde73e30747ea5d6ee33912516def4c87bc14adfb51ec7e9a037faa1d5c5446211774f6765686da778b17e37d72485d561c51f6e70a86562415b0f590f20d1
+  checksum: 10c0/13bb1fb4a58f1024ff2d2d5beff79ba566072fca1563f911bbc8ee332940a36b658397d235fa53cf4c4ee37c7a9b786d14eaef4ac312e2d015a48629ef6ee11b
   languageName: node
   linkType: hard
 
@@ -15886,7 +15886,7 @@ __metadata:
     graphql: ^16.0.0
     graphql-subscriptions: ^2.0.0
     ts-morph: ^19.0.0
-  checksum: 10c0/e22941524df13a20a67176aac42d27f6ac7860c72a4189eca91846d493f3da63b7d3ea71f2979bfb38de5e159fc6ac70d898fce20ef443e235f3b9202073441a
+  checksum: 10c0/2c6b2dfb13a5bf43477d1ea2eba390d9068860ea5b57e54b0cbc85d6c212092dd02ceaf5488ab4a6e0458d039066c0720f2c2ca4525e6cea37ee5e7ce2edca3a
   languageName: node
   linkType: hard
 
@@ -46326,6 +46326,64 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next@npm:14.2.35, next@npm:^14.2.35":
+  version: 14.2.35
+  resolution: "next@npm:14.2.35"
+  dependencies:
+    "@next/env": "npm:14.2.35"
+    "@next/swc-darwin-arm64": "npm:14.2.33"
+    "@next/swc-darwin-x64": "npm:14.2.33"
+    "@next/swc-linux-arm64-gnu": "npm:14.2.33"
+    "@next/swc-linux-arm64-musl": "npm:14.2.33"
+    "@next/swc-linux-x64-gnu": "npm:14.2.33"
+    "@next/swc-linux-x64-musl": "npm:14.2.33"
+    "@next/swc-win32-arm64-msvc": "npm:14.2.33"
+    "@next/swc-win32-ia32-msvc": "npm:14.2.33"
+    "@next/swc-win32-x64-msvc": "npm:14.2.33"
+    "@swc/helpers": "npm:0.5.5"
+    busboy: "npm:1.6.0"
+    caniuse-lite: "npm:^1.0.30001579"
+    graceful-fs: "npm:^4.2.11"
+    postcss: "npm:8.4.31"
+    styled-jsx: "npm:5.1.1"
+  peerDependencies:
+    "@opentelemetry/api": ^1.1.0
+    "@playwright/test": ^1.41.2
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    sass: ^1.3.0
+  dependenciesMeta:
+    "@next/swc-darwin-arm64":
+      optional: true
+    "@next/swc-darwin-x64":
+      optional: true
+    "@next/swc-linux-arm64-gnu":
+      optional: true
+    "@next/swc-linux-arm64-musl":
+      optional: true
+    "@next/swc-linux-x64-gnu":
+      optional: true
+    "@next/swc-linux-x64-musl":
+      optional: true
+    "@next/swc-win32-arm64-msvc":
+      optional: true
+    "@next/swc-win32-ia32-msvc":
+      optional: true
+    "@next/swc-win32-x64-msvc":
+      optional: true
+  peerDependenciesMeta:
+    "@opentelemetry/api":
+      optional: true
+    "@playwright/test":
+      optional: true
+    sass:
+      optional: true
+  bin:
+    next: dist/bin/next
+  checksum: 10c0/5b1eadd554cd2cb1f030335d71a9363d16d86453f60a2331333887804c8b4b04a16fcb1ddb58229b792b6c365dbd0fafd9ccacd727c85134101a124bd6b4c06a
+  languageName: node
+  linkType: hard
+
 "next@npm:16.0.10":
   version: 16.0.10
   resolution: "next@npm:16.0.10"
@@ -46382,64 +46440,6 @@ __metadata:
   bin:
     next: dist/bin/next
   checksum: 10c0/c0e42bfaa0d38b0ee9a7fc54c748da2dfd807a76d75278b4c4f06768965d7b1035b836cae45e24a074dcf156a13c0fa555caa652886cc0f93e8be2b296dfbb51
-  languageName: node
-  linkType: hard
-
-"next@npm:^14, next@npm:^14.2.25":
-  version: 14.2.35
-  resolution: "next@npm:14.2.35"
-  dependencies:
-    "@next/env": "npm:14.2.35"
-    "@next/swc-darwin-arm64": "npm:14.2.33"
-    "@next/swc-darwin-x64": "npm:14.2.33"
-    "@next/swc-linux-arm64-gnu": "npm:14.2.33"
-    "@next/swc-linux-arm64-musl": "npm:14.2.33"
-    "@next/swc-linux-x64-gnu": "npm:14.2.33"
-    "@next/swc-linux-x64-musl": "npm:14.2.33"
-    "@next/swc-win32-arm64-msvc": "npm:14.2.33"
-    "@next/swc-win32-ia32-msvc": "npm:14.2.33"
-    "@next/swc-win32-x64-msvc": "npm:14.2.33"
-    "@swc/helpers": "npm:0.5.5"
-    busboy: "npm:1.6.0"
-    caniuse-lite: "npm:^1.0.30001579"
-    graceful-fs: "npm:^4.2.11"
-    postcss: "npm:8.4.31"
-    styled-jsx: "npm:5.1.1"
-  peerDependencies:
-    "@opentelemetry/api": ^1.1.0
-    "@playwright/test": ^1.41.2
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    sass: ^1.3.0
-  dependenciesMeta:
-    "@next/swc-darwin-arm64":
-      optional: true
-    "@next/swc-darwin-x64":
-      optional: true
-    "@next/swc-linux-arm64-gnu":
-      optional: true
-    "@next/swc-linux-arm64-musl":
-      optional: true
-    "@next/swc-linux-x64-gnu":
-      optional: true
-    "@next/swc-linux-x64-musl":
-      optional: true
-    "@next/swc-win32-arm64-msvc":
-      optional: true
-    "@next/swc-win32-ia32-msvc":
-      optional: true
-    "@next/swc-win32-x64-msvc":
-      optional: true
-  peerDependenciesMeta:
-    "@opentelemetry/api":
-      optional: true
-    "@playwright/test":
-      optional: true
-    sass:
-      optional: true
-  bin:
-    next: dist/bin/next
-  checksum: 10c0/5b1eadd554cd2cb1f030335d71a9363d16d86453f60a2331333887804c8b4b04a16fcb1ddb58229b792b6c365dbd0fafd9ccacd727c85134101a124bd6b4c06a
   languageName: node
   linkType: hard
 
@@ -50967,7 +50967,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: 10c0/24d6cc7fcae591eb9c34f00ad781dcc0578fab0516bba3d4594dfe5c0e9debfb9d0c7ebe531a886e4694078dcba5b2e9b1d6d632759cc8d2de3d8b86448371a8
+  checksum: 10c0/1596666f5d26808e18c592733fe6fd7ceb635e733c1cede9cea33aff438e94267c64084ad8d15f99b7ed11de310e4e532a535c27f1125d721846a7eba0d2dd21
   languageName: node
   linkType: hard
 
@@ -52340,7 +52340,7 @@ __metadata:
     supports-preserve-symlinks-flag: "npm:^1.0.0"
   bin:
     resolve: bin/resolve
-  checksum: 10c0/0446f024439cd2e50c6c8fa8ba77eaa8370b4180f401a96abf3d1ebc770ac51c1955e12764cde449fde3fff480a61f84388e3505ecdbab778f4bef5f8212c729
+  checksum: 10c0/7cd6d4adbf86ac67d5a4c1f67d6e654a96452bbd953cea880e8d41796918608d261c4e1b9db0c8fedafba9a42c55dba309d843d42574b740d1cfa592643440f0
   languageName: node
   linkType: hard
 
@@ -52353,7 +52353,7 @@ __metadata:
     supports-preserve-symlinks-flag: "npm:^1.0.0"
   bin:
     resolve: bin/resolve
-  checksum: 10c0/52a4e505bbfc7925ac8f4cd91fd8c4e096b6a89728b9f46861d3b405ac9a1ccf4dcbf8befb4e89a2e11370dacd0160918163885cbc669369590f2f31f4c58939
+  checksum: 10c0/ea31d52001f9c8f46e9780baec16da30efb97f3d747488cae470be7464c2f3e48101c961c4058320d0d5a7b5c29805bacc0d7d2cbf8237bcbc8d88b8698380f8
   languageName: node
   linkType: hard
 
@@ -52366,7 +52366,7 @@ __metadata:
     supports-preserve-symlinks-flag: "npm:^1.0.0"
   bin:
     resolve: bin/resolve
-  checksum: 10c0/ee5b182f2e37cb1165465e58c6abc797fec0a80b5ba3231607beb4677db0c9291ac010c47cf092b6daa2b7f518d69a0e21888e7e2b633f68d501a874212a8c63
+  checksum: 10c0/e5a9e1cc868b379bf482279f422291057b0f6f53ae0c5a444a630a3799867d81435f8990c03bb84798af3b650ca1ad6872633f38309e0fb39d7de376eb76c3c2
   languageName: node
   linkType: hard
 
@@ -52379,7 +52379,7 @@ __metadata:
     supports-preserve-symlinks-flag: "npm:^1.0.0"
   bin:
     resolve: bin/resolve
-  checksum: 10c0/78ad6edb8309a2bfb720c2c1898f7907a37f858866ce11a5974643af1203a6a6e05b2fa9c53d8064a673a447b83d42569260c306d43628bff5bb101969708355
+  checksum: 10c0/e2bf6ade8552967eca009a6e05c304eecb7e9bc69b6ddf8f514911b3008e8da7c89b36c31b64d94350b8996257219307abe407788648bcc90a640923c08c38cf
   languageName: node
   linkType: hard
 
@@ -52389,7 +52389,7 @@ __metadata:
   dependencies:
     is-core-module: "npm:^2.1.0"
     path-parse: "npm:^1.0.6"
-  checksum: 10c0/254980f60dd9fdb28b34a511e70df6e3027d9627efce86a40757eea9b87252d172829c84517554560c4541ebfe207868270c19a0f086997b41209367aa8ef74f
+  checksum: 10c0/687f51cf43efcc189036e8819000e34b4de7e5f54ff517df18c6433aabbf9883b23adbd45c24979366ba1dfde610cdcf6663e925a6238d03f9b76c4b9d2a34aa
   languageName: node
   linkType: hard
 
@@ -57096,7 +57096,7 @@ __metadata:
     eslint-config-next: "npm:^14.2.0"
     facepaint: "npm:^1.2.1"
     gray-matter: "npm:^4.0.3"
-    next: "npm:^14.2.25"
+    next: "npm:^14.2.35"
     next-mdx-remote: "npm:^4.4.1"
     next-runtime-env: "npm:^3.3.0"
     postgres: "npm:^3.4.3"
@@ -57607,7 +57607,7 @@ __metadata:
     typeorm: cli.js
     typeorm-ts-node-commonjs: cli-ts-node-commonjs.js
     typeorm-ts-node-esm: cli-ts-node-esm.js
-  checksum: 10c0/2593c3ddf6b243c6be13e3d9deebad1e9ecfcbdda8bb518b7fb633077e2e20b99c1873cdc0848df8ba44c9bfb22ecfe345937aa82702a9c857ecd73b32de8373
+  checksum: 10c0/d8a11ee8dbbc840dfda09488820e2fab4a56b2c72cad5240b1b28d9bf5245c0e99dd74af80b72660a252e2002a5b6eaf05ea4e6ed42b6dd7f59b7e9f50ad9ce4
   languageName: node
   linkType: hard
 
@@ -57627,7 +57627,7 @@ __metadata:
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/34d2a8e23eb8e0d1875072064d5e1d9c102e0bdce56a10a25c0b917b8aa9001a9cf5c225df12497e99da107dc379360bc138163c66b55b95f5b105b50578067e
+  checksum: 10c0/7c734ccab27126c0df9409af4203cbd87f4585d9c1d0cf4e1b1174dda5b74c8f411ca1055c163f3c3b312488aa2f873a285605fb68a93035d8fabc32dfe44abd
   languageName: node
   linkType: hard
 
