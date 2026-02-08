@@ -35,6 +35,7 @@ RUN yarn workspaces focus --production twenty-emails twenty-shared twenty-server
 FROM common-deps AS twenty-front-build
 
 ARG REACT_APP_SERVER_BASE_URL
+ARG CACHEBUST=1
 
 COPY ./packages/twenty-front /app/packages/twenty-front
 COPY ./packages/twenty-ui /app/packages/twenty-ui
