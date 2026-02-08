@@ -243,6 +243,12 @@ export class ApolloFactory<TCacheShape> implements ApolloManager<TCacheShape> {
                   return;
                 }
                 case 'UNAUTHENTICATED': {
+                  if (
+                    operation.operationName ===
+                    'GetAuthTokensFromLoginToken'
+                  ) {
+                    return;
+                  }
                   // eslint-disable-next-line no-console
                   console.log('UNAUTHENTICATED, triggering token renewal');
                   return handleTokenRenewal(operation, forward);
